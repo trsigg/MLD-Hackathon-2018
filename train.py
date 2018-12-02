@@ -3,7 +3,7 @@ from collections import namedtuple
 import itertools
 from tqdm import tqdm
 
-player = PongPlayer('train1.pt', True)
+player = PongPlayer('train2.pt', True)
 env = PongEnv()
 
 target_net = MyModelClass().to(device)
@@ -101,8 +101,11 @@ for i_episode in tqdm(range(num_episodes)):
                 rewards.append(reward_sum)
                 break
     except KeyboardInterrupt:
-        print("Emergency saving...")
-        player.save()
+        print("Interrupt detected.")
+        if input("Save? ") != 'n':
+            player.save()
+        if input("Kill? ") == 'y':
+            exit()
     # Update the target network
     if i_episode % TARGET_UPDATE == 0:
         target_net.load_state_dict(player.model.state_dict())
