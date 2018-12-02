@@ -6,10 +6,15 @@ from .pong_env import PongEnv
 class MyModelClass(torch.nn.Module):
     
     def __init__(self):
-        pass
+        self.linear1 = torch.nn.Linear(state_size, 32)
+        self.linear2 = torch.nn.Linear(32, 32)
+        self.output = torch.nn.Linear(32, 2)
+        self.steps = 0
     
     def forward(self, x):
-        pass
+        x = F.relu(self.linear1(x))
+        x = F.relu(self.linear2(x))
+        return self.output(x)
 
 
 # TODO fill out the methods of this class
