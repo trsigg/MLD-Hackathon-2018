@@ -3,7 +3,7 @@ from collections import namedtuple
 import itertools
 from tqdm import tqdm
 
-player = PongPlayer('train2.pt', True)
+player = PongPlayer('train1.pt', True)
 env = PongEnv()
 
 target_net = MyModelClass().to(device)
@@ -74,7 +74,7 @@ def train_step():
     player.optimizer.step()
 
 
-num_episodes = 100
+num_episodes = 10
 rewards = []
 for i_episode in tqdm(range(num_episodes)):
     env.reset()
@@ -111,3 +111,7 @@ for i_episode in tqdm(range(num_episodes)):
         target_net.load_state_dict(player.model.state_dict())
 
 player.save()
+print("Mean reward: ", np.mean(rewards))
+print("Max reward: ", np.max(rewards))
+print("Num rewards: ", len(rewards))
+print("Num saves: ", player.num_saves)

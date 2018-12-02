@@ -20,13 +20,15 @@ class MyModelClass(torch.nn.Module):
     def __init__(self):
         super(MyModelClass, self).__init__()
         self.linear1 = torch.nn.Linear(7, 32)
-        self.linear2 = torch.nn.Linear(32, 32)
+        self.linear2 = torch.nn.Linear(32, 20)
+        self.linear3 = torch.nn.Linear(20, 32)
         self.output = torch.nn.Linear(32, 3)
         self.steps = 0
     
     def forward(self, x):
         x = F.relu(self.linear1(x))
         x = F.relu(self.linear2(x))
+        x = F.relu(self.linear3(x))
         return self.output(x)
 
 
@@ -39,6 +41,11 @@ class PongPlayer:
         self.steps = 0
         if load:
             self.load()
+        try:
+            state = torch.load(self.save_path)
+            self.num_saves = state['num_saves']
+        except FileNotFoundError:
+            self.num_saves = 0
 
     def build_model(self):
         self.model = MyModelClass().to(device)
@@ -63,6 +70,7 @@ class PongPlayer:
 
     def save(self):
         state = {
+            'num_saves': self.num_saves + 1,
             'model_state_dict': self.model.state_dict(),
             'optimizer_state_dict': self.optimizer.state_dict()
         }
