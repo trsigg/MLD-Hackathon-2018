@@ -1,13 +1,25 @@
+import random
 import torch
 import torch.nn.functional as F
 import numpy as np
+from collections import namedtuple
 
 from pong_env import PongEnv
 
-# TODO replace this class with your model
+BATCH_SIZE = 128
+GAMMA = 0.999
+EPS_START = 0.9
+EPS_DECAY = 200
+EPS_END = 0.05
+TARGET_UPDATE = 10
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+
 class MyModelClass(torch.nn.Module):
     
     def __init__(self):
+        super(MyModelClass, self).__init__()
         self.linear1 = torch.nn.Linear(7, 32)
         self.linear2 = torch.nn.Linear(32, 32)
         self.output = torch.nn.Linear(32, 3)
@@ -16,48 +28,34 @@ class MyModelClass(torch.nn.Module):
     def forward(self, x):
         x = F.relu(self.linear1(x))
         x = F.relu(self.linear2(x))
-        return torch.nn.Softmax(self.output(x))
+        return self.output(x)
 
 
-# TODO fill out the methods of this class
-class PongPlayer(object):
+class PongPlayer:
 
     def __init__(self, save_path, load=False):
         self.build_model()
         self.build_optimizer()
         self.save_path = save_path
+        self.steps = 0
         if load:
             self.load()
 
     def build_model(self):
-        # TODO: define your model here
-        # I would suggest creating another class that subclasses
-        # torch.nn.Module. Then you can just instantiate it here.
-        # your not required to do this but if you don't you should probably
-        # adjust the load and save functions to work with the way you did it.
-        self.model = MyModelClass()
+        self.model = MyModelClass().to(device)
 
     def build_optimizer(self):
-        # TODO: define your optimizer here
-        optimizer = torch.optim.RMSprop(self.parameters())
-        self.optimizer = None
+        self.optimizer = torch.optim.RMSprop(self.model.parameters())
 
-    def get_action(self, state):
-        # TODO: this method should return the output of your model
-        output = self.model(state)
-        index = numpy.random.random_sample()
-        for i in output:
-            if index < output[i]:
-                return i
-            index -= output[i]
-
-        raise IndexError
-
-    def reset(self):
-        # TODO: this method will be called whenever a game finishes
-        # so if you create a model that has state you should reset it here
-        # NOTE: this is optional and only if you need it for your model
-        pass
+    def get_action(self, state, _eval=True):
+        eps_thresh = EPS_END + (EPS_START - EPS_END) * np.exp(-1.0 * self.steps / EPS_DECAY)
+        self.steps += 1
+        if random.random() > eps_thresh or _eval:
+            with torch.no_grad():
+                index = self.model(state).max(1)[1]
+                return index.view(1, 1)
+        else:
+            return torch.tensor([[random.randrange(2)]], device=device, dtype=torch.long)
 
     def load(self):
         state = torch.load(self.save_path)
@@ -71,7 +69,7 @@ class PongPlayer(object):
         }
         torch.save(state, self.save_path)
 
-    
+
 def play_game(player, render=True):
     # call this function to run your model on the environment
     # and see how it does
