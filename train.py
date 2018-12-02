@@ -1,16 +1,9 @@
+from pong_player import *
 import random
 import itertools
 from collections import namedtuple
 
-import numpy as np
-import torch
-import torch.nn.functional as F
-
-from pong_player.py import *
-
-env = gym.make('CartPole-v0').unwrapped
-
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+env = PongEnv()
 
 Transition = namedtuple('Transition', ('state', 'action', 'next_state', 'reward'))
 
@@ -43,8 +36,8 @@ TARGET_UPDATE = 10
 
 state_size = env.observation_space.shape[0]
 
-net = MyModelClass.to(device)
-target_net = MyModelClass.to(device)
+net = MyModelClass()
+target_net = MyModelClass()
 target_net.load_state_dict(net.state_dict())
 target_net.eval()
 
