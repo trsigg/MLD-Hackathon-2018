@@ -7,7 +7,7 @@ from pong_env import PongEnv
 
 BATCH_SIZE = 128
 GAMMA = 0.999
-EPS_START = 0.9
+EPS_START = 0.05
 EPS_DECAY = 200
 EPS_END = 0.05
 TARGET_UPDATE = 10
@@ -20,15 +20,15 @@ class MyModelClass(torch.nn.Module):
     def __init__(self):
         super(MyModelClass, self).__init__()
         self.linear1 = torch.nn.Linear(7, 32)
-        self.linear2 = torch.nn.Linear(32, 20)
-        self.linear3 = torch.nn.Linear(20, 32)
+        self.linear2 = torch.nn.Linear(32, 32)
+        #self.linear3 = torch.nn.Linear(20, 32)
         self.output = torch.nn.Linear(32, 3)
         self.steps = 0
     
     def forward(self, x):
         x = F.relu(self.linear1(x))
         x = F.relu(self.linear2(x))
-        x = F.relu(self.linear3(x))
+        #x = F.relu(self.linear3(x))
         return self.output(x)
 
 

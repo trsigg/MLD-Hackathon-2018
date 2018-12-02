@@ -3,7 +3,7 @@ from collections import namedtuple
 import itertools
 from tqdm import tqdm
 
-player = PongPlayer('train2t.pt', True)
+player = PongPlayer('train1t.pt', True)
 env = PongEnv()
 
 target_net = MyModelClass().to(device)
@@ -80,7 +80,7 @@ def print_reward_stats(rewards):
     print("Num rewards: ", len(rewards))
 
 
-num_episodes = 200
+num_episodes = 100
 rewards = []
 for i_episode in tqdm(range(num_episodes)):
     env.reset()
