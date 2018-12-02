@@ -38,6 +38,7 @@ class PongPlayer(object):
 
     def build_optimizer(self):
         # TODO: define your optimizer here
+        optimizer = torch.optim.RMSprop(self.parameters())
         self.optimizer = None
 
     def get_action(self, state):
