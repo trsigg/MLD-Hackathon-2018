@@ -1,5 +1,6 @@
 import torch
 import torch.nn.functional as F
+import numpy as np
 
 from pong_env import PongEnv
 
@@ -38,6 +39,7 @@ class PongPlayer(object):
 
     def build_optimizer(self):
         # TODO: define your optimizer here
+        optimizer = torch.optim.RMSprop(self.parameters())
         self.optimizer = None
 
     def get_action(self, state):
