@@ -3,6 +3,7 @@ import random
 import itertools
 from collections import namedtuple
 
+
 env = PongEnv()
 
 Transition = namedtuple('Transition', ('state', 'action', 'next_state', 'reward'))
