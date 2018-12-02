@@ -8,7 +8,7 @@ import torch.nn.functional as F
 
 from pong_player.py import *
 
-env = gym.make('CartPole-v0').unwrapped
+env = PongEnv()
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
