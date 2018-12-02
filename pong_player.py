@@ -2,7 +2,6 @@ import random
 import torch
 import torch.nn.functional as F
 import numpy as np
-from collections import namedtuple
 
 from pong_env import PongEnv
 

@@ -1,8 +1,10 @@
 from pong_player import *
+from collections import namedtuple
+import itertools
+from tqdm import tqdm
 
-player = PongPlayer('train1.py', False)
-
-state_size = env.observation_space.shape[0]
+player = PongPlayer('train1.pt', True)
+env = PongEnv()
 
 target_net = MyModelClass().to(device)
 target_net.load_state_dict(player.model.state_dict())
@@ -56,8 +58,7 @@ def train_step():
     state_action_values = state_batch_values.gather(1, action_batch)
 
     next_state_values = torch.zeros(BATCH_SIZE, device=device)
-    next_state_values[non_final_mask] = \
-    target_net(non_final_next_states).max(1)[0].detach()
+    next_state_values[non_final_mask] = target_net(non_final_next_states).max(1)[0].detach()
 
     expected_state_action_values = (next_state_values * GAMMA) + reward_batch
 
@@ -75,13 +76,13 @@ def train_step():
 
 num_episodes = 1000
 rewards = []
-for i_episode in range(num_episodes):
+for i_episode in tqdm(range(num_episodes)):
     env.reset()
     state = torch.tensor(env.state, device=device, dtype=torch.float32).view(1, -1)
     reward_sum = 0
     for t in itertools.count():
         # Select and perform an action
-        action = player.model.get_action(state)
+        action = player.get_action(state, False)
         next_state, reward, done, _ = env.step(action.item())
         reward_sum += reward
         reward = torch.tensor([reward], device=device)
@@ -102,3 +103,4 @@ for i_episode in range(num_episodes):
     if i_episode % TARGET_UPDATE == 0:
         target_net.load_state_dict(player.model.state_dict())
 
+player.save()
