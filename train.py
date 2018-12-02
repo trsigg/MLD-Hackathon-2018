@@ -74,31 +74,35 @@ def train_step():
     player.optimizer.step()
 
 
-num_episodes = 1000
+num_episodes = 100
 rewards = []
 for i_episode in tqdm(range(num_episodes)):
     env.reset()
     state = torch.tensor(env.state, device=device, dtype=torch.float32).view(1, -1)
     reward_sum = 0
-    for t in itertools.count():
-        # Select and perform an action
-        action = player.get_action(state, False)
-        next_state, reward, done, _ = env.step(action.item())
-        reward_sum += reward
-        reward = torch.tensor([reward], device=device)
+    try:
+        for t in itertools.count():
+            # Select and perform an action
+            action = player.get_action(state, False)
+            next_state, reward, done, _ = env.step(action.item())
+            reward_sum += reward
+            reward = torch.tensor([reward], device=device)
 
-        next_state = torch.tensor(next_state, device=device, dtype=torch.float32).view(1, -1)
-        # Store the transition in memory
-        replay_buffer.add(state, action, next_state, reward)
+            next_state = torch.tensor(next_state, device=device, dtype=torch.float32).view(1, -1)
+            # Store the transition in memory
+            replay_buffer.add(state, action, next_state, reward)
 
-        # Move to the next state
-        state = next_state
+            # Move to the next state
+            state = next_state
 
-        # Perform one step of the optimization (on the target network)
-        train_step()
-        if done:
-            rewards.append(reward_sum)
-            break
+            # Perform one step of the optimization (on the target network)
+            train_step()
+            if done:
+                rewards.append(reward_sum)
+                break
+    except KeyboardInterrupt:
+        print("Emergency saving...")
+        player.save()
     # Update the target network
     if i_episode % TARGET_UPDATE == 0:
         target_net.load_state_dict(player.model.state_dict())
