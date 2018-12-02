@@ -1,4 +1,5 @@
 import torch
+import torch.nn.functional as F
 
 from .pong_env import PongEnv
 
@@ -6,15 +7,15 @@ from .pong_env import PongEnv
 class MyModelClass(torch.nn.Module):
     
     def __init__(self):
-        self.linear1 = torch.nn.Linear(state_size, 32)
+        self.linear1 = torch.nn.Linear(7, 32)
         self.linear2 = torch.nn.Linear(32, 32)
-        self.output = torch.nn.Linear(32, 2)
+        self.output = torch.nn.Linear(32, 3)
         self.steps = 0
     
     def forward(self, x):
         x = F.relu(self.linear1(x))
         x = F.relu(self.linear2(x))
-        return self.output(x)
+        return torch.nn.Softmax(self.output(x))
 
 
 # TODO fill out the methods of this class
