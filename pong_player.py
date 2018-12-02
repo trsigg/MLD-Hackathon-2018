@@ -36,7 +36,14 @@ class PongPlayer(object):
 
     def get_action(self, state):
         # TODO: this method should return the output of your model
-        pass
+        output = self.model(state)
+        index = numpy.random.random_sample()
+        for i in output:
+            if index < output[i]:
+                return i
+            index -= output[i]
+
+        raise IndexError
 
     def reset(self):
         # TODO: this method will be called whenever a game finishes
