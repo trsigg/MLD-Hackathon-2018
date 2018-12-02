@@ -1,7 +1,7 @@
 import torch
 import torch.nn.functional as F
 
-from .pong_env import PongEnv
+from pong_env import PongEnv
 
 # TODO replace this class with your model
 class MyModelClass(torch.nn.Module):
