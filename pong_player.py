@@ -40,7 +40,12 @@ class PongPlayer:
         self.save_path = save_path
         self.steps = 0
         if load:
-            self.load()
+            try:
+                self.load()
+            except FileNotFoundError:
+                print("Loading failed. ")
+
+        #  set num_saves
         try:
             state = torch.load(self.save_path)
             self.num_saves = state['num_saves']

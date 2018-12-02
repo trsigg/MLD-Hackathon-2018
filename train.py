@@ -3,7 +3,7 @@ from collections import namedtuple
 import itertools
 from tqdm import tqdm
 
-player = PongPlayer('train1.pt', True)
+player = PongPlayer('train2t.pt', True)
 env = PongEnv()
 
 target_net = MyModelClass().to(device)
@@ -74,12 +74,19 @@ def train_step():
     player.optimizer.step()
 
 
-num_episodes = 10
+def print_reward_stats(rewards):
+    print("Mean reward: ", np.mean(rewards))
+    print("Max reward: ", np.max(rewards))
+    print("Num rewards: ", len(rewards))
+
+
+num_episodes = 200
 rewards = []
 for i_episode in tqdm(range(num_episodes)):
     env.reset()
     state = torch.tensor(env.state, device=device, dtype=torch.float32).view(1, -1)
     reward_sum = 0
+
     try:
         for t in itertools.count():
             # Select and perform an action
@@ -106,12 +113,13 @@ for i_episode in tqdm(range(num_episodes)):
             player.save()
         if input("Kill? ") == 'y':
             exit()
+
+    if i_episode % 10 == 0:
+        print_reward_stats(rewards[-10:])
     # Update the target network
     if i_episode % TARGET_UPDATE == 0:
         target_net.load_state_dict(player.model.state_dict())
 
 player.save()
-print("Mean reward: ", np.mean(rewards))
-print("Max reward: ", np.max(rewards))
-print("Num rewards: ", len(rewards))
+print_reward_stats(rewards)
 print("Num saves: ", player.num_saves)
