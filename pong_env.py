@@ -10,6 +10,7 @@ class PongEnv(gym.Env):
 
         self.ball_max_vel = 0.1
         self.min_x_mag = 0.025
+        self.min_y_mag = 0.025
         self.paddle_max_vel = 0.1
         self.paddle_height = 1. / 8
         self.paddle_width = 1. / 60
@@ -99,6 +100,8 @@ class PongEnv(gym.Env):
 
         if np.abs(ball_vel_x) < self.min_x_mag:
             ball_vel_x = np.sign(ball_vel_x) * self.min_x_mag
+        if np.abs(ball_vel_y) < self.min_y_mag:
+            ball_vel_x = np.sign(ball_vel_x) * self.min_y_mag
 
         self.state = [
             ball_pos_x,
