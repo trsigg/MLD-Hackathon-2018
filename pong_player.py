@@ -63,10 +63,10 @@ class PongPlayer:
         self.steps += 1
         if random.random() > eps_thresh or _eval:
             with torch.no_grad():
-                index = self.model(state).max(1)[1]
-                return index.view(1, 1)
+                index = self.model(state).max(1)[1].item()
+                return index
         else:
-            return torch.tensor([[random.randrange(2)]], device=device, dtype=torch.long)
+            return random.randrange(3)
 
     def load(self):
         state = torch.load(self.save_path)

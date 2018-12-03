@@ -170,14 +170,3 @@ class PongEnv(gym.Env):
         if self.viewer:
             self.viewer.close()
             self.viewer = None
-
-
-if __name__ == '__main__':
-    env = PongEnv()
-    env.reset()
-    done = False
-    while not done:
-        _, _, done, _ = env.step(env.np_random.randint(3))
-        env.render()
-    
-    env.close()
