@@ -8,7 +8,7 @@ class PongEnv(gym.Env):
 
     def __init__(self):
 
-        self.ball_max_vel = 0.1
+        self.ball_max_vel = 0.01
         self.min_x_mag = 0.025
         self.paddle_max_vel = 0.1
         self.paddle_height = 1. / 8
@@ -60,6 +60,7 @@ class PongEnv(gym.Env):
                 # collision with player paddle
                 reward = 1.0                
                 ball_vel_x = -ball_vel_x
+                ball_vel_y = self.np_random.rand() * self.ball_max_vel
             else:
                 reward = -10.0
                 score += 1

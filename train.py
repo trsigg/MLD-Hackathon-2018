@@ -3,7 +3,7 @@ from collections import namedtuple
 import itertools
 from tqdm import tqdm
 
-player = PongPlayer('train1t.pt', True)
+player = PongPlayer('train3t.pt', False)
 env = PongEnv()
 
 target_net = MyModelClass().to(device)
